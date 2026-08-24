@@ -87,12 +87,23 @@ export default function Home() {
 
   return (
     <main className="page-shell">
-      <div className="orb orb-one" aria-hidden="true" />
-      <div className="orb orb-two" aria-hidden="true" />
+      <div className="brand-wall" aria-hidden="true">
+        {Array.from({ length: 14 }).map((_, index) => (
+          <img
+            alt=""
+            className={index % 3 === 0 ? "pattern-mascot" : "pattern-logo"}
+            key={index}
+            src={index % 3 === 0 ? "/onec-mascot.png" : "/onec-logo.png"}
+            style={{ "--pattern-index": index } as React.CSSProperties}
+          />
+        ))}
+      </div>
 
       <section className="application-card" aria-live="polite">
         <header className="topbar">
-          <div className="brand-mark" aria-hidden="true">Л</div>
+          <div className="brand-mark" aria-hidden="true">
+            <img alt="" src="/onec-logo.png" />
+          </div>
           <div>
             <p className="kicker">Личное дело</p>
             <p className="document-id">Заявление № {applicationNumber}</p>

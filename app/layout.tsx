@@ -5,8 +5,8 @@ export const metadata: Metadata = {
   title: "Подача заявления для девушки",
   description: "Нежная интерактивная форма-викторина с моментальной проверкой ответов.",
   icons: {
-    icon: "/favicon.svg",
-    shortcut: "/favicon.svg",
+    icon: "/onec-logo.png",
+    shortcut: "/onec-logo.png",
   },
 };
 
