@@ -90,6 +90,22 @@ const questions: Question[] = [
   },
 ];
 
+const shuffleAnswers = (question: Question): Question => {
+  const correctAnswer = question.answers[question.correct];
+  const answers = [...question.answers];
+
+  for (let index = answers.length - 1; index > 0; index -= 1) {
+    const randomIndex = Math.floor(Math.random() * (index + 1));
+    [answers[index], answers[randomIndex]] = [answers[randomIndex], answers[index]];
+  }
+
+  return {
+    ...question,
+    answers,
+    correct: answers.indexOf(correctAnswer),
+  };
+};
+
 export default function Home() {
   const [name, setName] = useState("");
   const [started, setStarted] = useState(false);
@@ -97,10 +113,11 @@ export default function Home() {
   const [selected, setSelected] = useState<number | null>(null);
   const [score, setScore] = useState(0);
   const [finished, setFinished] = useState(false);
+  const [quizQuestions, setQuizQuestions] = useState(questions);
 
-  const question = questions[current];
-  const progress = ((current + (finished ? 1 : 0)) / questions.length) * 100;
-  const finalAnswerIsCorrect = selected === questions[questions.length - 1].correct;
+  const question = quizQuestions[current];
+  const progress = ((current + (finished ? 1 : 0)) / quizQuestions.length) * 100;
+  const finalAnswerIsCorrect = selected === quizQuestions[quizQuestions.length - 1].correct;
   const passed = finished && score >= 3 && finalAnswerIsCorrect;
   const applicationNumber = useMemo(
     () => String(new Date().getDate()).padStart(2, "0") + "–LOVE",
@@ -114,12 +131,19 @@ export default function Home() {
   };
 
   const nextQuestion = () => {
-    if (current === questions.length - 1) {
+    if (current === quizQuestions.length - 1) {
       setFinished(true);
       return;
     }
     setCurrent((value) => value + 1);
     setSelected(null);
+  };
+
+  const startQuiz = () => {
+    setQuizQuestions(
+      questions.map((item, index) => (index < 3 ? shuffleAnswers(item) : item)),
+    );
+    setStarted(true);
   };
 
   const restart = () => {
@@ -179,7 +203,7 @@ export default function Home() {
             <button
               className="primary-button"
               type="button"
-              onClick={() => setStarted(true)}
+              onClick={startQuiz}
               disabled={!name.trim()}
             >
               Подать заявление
@@ -204,7 +228,7 @@ export default function Home() {
             <p className="eyebrow">{passed ? "Тест пройден" : "Нужна пересдача"}</p>
             <h1>{name}, заявление<br />рассмотрено</h1>
             <p className="result-score">
-              <strong>{score}</strong><span>из {questions.length}</span>
+              <strong>{score}</strong><span>из {quizQuestions.length}</span>
             </p>
             <p className="lede result-copy">
               {passed
@@ -219,7 +243,7 @@ export default function Home() {
         ) : (
           <div className="quiz view-enter" key={current}>
             <div className="progress-row">
-              <span>Вопрос {current + 1} из {questions.length}</span>
+              <span>Вопрос {current + 1} из {quizQuestions.length}</span>
               <span>{Math.round(progress)}%</span>
             </div>
             <div className="progress-track" aria-hidden="true">
@@ -281,7 +305,7 @@ export default function Home() {
               onClick={nextQuestion}
               disabled={selected === null}
             >
-              {current === questions.length - 1 ? "Получить решение" : "Следующий вопрос"}
+              {current === quizQuestions.length - 1 ? "Получить решение" : "Следующий вопрос"}
               <span aria-hidden="true">→</span>
             </button>
           </div>
